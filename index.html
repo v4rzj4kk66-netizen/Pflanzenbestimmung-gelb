@@ -561,7 +561,9 @@ function showPlantSelection(plantNames) {
   plantNames.forEach(name => {
     html += createOption(
       name,
-      plants[name].bild
+      plants[name].bild,
+      `Blütezeit: ${plants[name].bluetezeit}`,
+      `showPlantCard('${name}')`
     );
   });
 
@@ -601,3 +603,4 @@ showMainQuestion();
 
 </body>
 </html>
+
