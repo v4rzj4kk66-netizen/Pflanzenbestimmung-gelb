@@ -575,29 +575,28 @@ Klicke auf Bild oder Namen für weitere Informationen.
 }
 
 function showPlantCard(name) {
-  saveCurrentState();
-  addPath('Bestimmte Pflanze: ' + name);
+saveState();
+addPath('Bestimmte Pflanze: ' + name);
 
-  const plant = plants[name];
+const plant = plants[name];
 
-  document.getElementById('app').innerHTML = `
-    <div class="plant-card">
-      <div class="info-box">
-        <h2 style="cursor:pointer;" onclick="toggleBloomTime()">${name}</h2>
+document.getElementById('app').innerHTML = `
+<div class="plant-card">
+<div class="info-box">
+<h2>${name}</h2>
+<p><strong>Familie:</strong> ${plant.familie}</p>
+<p><strong>Fundort:</strong> ${plant.fundort}</p>
+<p><strong></strong> ${plant.bluetezeit}</p>
+</div>
 
-        <p><strong>Familie:</strong> ${plant.familie}</p>
-        <p><strong>Fundort:</strong> ${plant.fundort}</p>
-        <p><strong>Blütezeit:</strong> ${plant.bluetezeit}</p>
-      </div>
+<img src="${plant.bild}" alt="${name}">
 
-      <img src="${plant.bild}" alt="${name}" style="cursor:pointer;" onclick="toggleBloomTime()">
-
-      <div class="button-row">
-        <button onclick="resetApp()">Neue Bestimmung starten</button>
-        <button onclick="goBack()">Zurück</button>
-      </div>
-    </div>
-  `;
+<div class="button-row">
+<button onclick="goBack()">Zurück</button>
+<button onclick="resetApp()">Neue Bestimmung starten</button>
+</div>
+</div>
+`;
 }
 showMainQuestion();
 </script>
