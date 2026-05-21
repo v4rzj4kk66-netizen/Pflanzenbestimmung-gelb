@@ -561,8 +561,7 @@ function showPlantSelection(plantNames) {
   plantNames.forEach(name => {
     html += createOption(
       name,
-      plants[name].bild,
-      `showPlantCard('${name}')`
+      plants[name].bild
     );
   });
 
