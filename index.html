@@ -574,24 +574,34 @@ Klicke auf Bild oder Namen für weitere Informationen.
   document.getElementById('app').innerHTML = html;
 }
 
-function showPlants(g){addPath('Pflanze');let html="<h2>3. Pflanze wählen</h2><div class='options'>";
-for(let n in plants[g]){let p=plants[g][n];html+=`<div class='card' onclick="showPlant('${g}','${n}')"><img src='${p.bild}'><div class='card-content'><h3>${n}</h3></div></div>`;}
-html+='</div><button onclick="start()">Bestimmung neu starten</button>';
-document.getElementById("app").innerHTML=html;
+function showPlantCard(name) {
+  saveCurrentState();
+  addPath('Bestimmte Pflanze: ' + name);
+
+  const plant = plants[name];
+
+  document.getElementById('app').innerHTML = `
+    <div class="plant-card">
+      <div class="info-box">
+        <h2>${name}</h2>
+
+        <p><strong>Familie:</strong> ${plant.familie}</p>
+        <p><strong>Fundort:</strong> ${plant.fundort}</p>
+        <p><strong>Blütezeit:</strong> ${plant.bluetezeit}</p>
+      </div>
+
+      <img src="${plant.bild}" alt="${name}">
+
+      <div class="button-row">
+        <button onclick="resetApp()">Neue Bestimmung starten</button>
+        <button onclick="goBack()">Zurück</button>
+      </div>
+    </div>
+  `;
 }
 
-function showPlant(g,n){addPath(n);let p=plants[g][n];document.getElementById("app").innerHTML=`
-<div class='info'>
-<h2>${n}</h2>
-<p><b>Familie:</b> ${p.familie}</p>
-<p><b>Fundort:</b> ${p.fundort}</p>
-<p><b>Blütezeit:</b> ${p.bluetezeit ?? 'keine Angabe'}</p>
-</div>
-<img src='${p.bild}' style='width:100%;background:white'>
-<button onclick='start()'>Bestimmung neu starten</button>
-`}
-
-start();
+showMainQuestion();
 </script>
+
 </body>
 </html>
