@@ -554,15 +554,19 @@ function showPlantSelection(plantNames) {
 
   let html = `
     <div class="question">
-      <h2>3. Wähle die passende Pflanze aus</h2>
-      <p style="margin-bottom:20px; color:#5a4bb5; font-weight:bold;">
-        Klicke auf Bild oder Namen für weitere Informationen.
-      </p>
+<h2>3. Wähle die passende Pflanze aus</h2>
+<p style="margin-bottom:15px; font-size:0.95rem; color:#5a6b3a;">
+Klicke auf Bild oder Namen für weitere Informationen.
+</p>
       <div class="options">
   `;
 
   plantNames.forEach(name => {
-    html += createOption(name, plants[name].bild, '', `showPlantCard('${name}')`);
+    html += createOption(
+      name,
+      plants[name].bild,
+      `showPlantCard('${name}')`
+    );
   });
 
   html += `</div></div>`;
@@ -579,14 +583,17 @@ function showPlantCard(name) {
   document.getElementById('app').innerHTML = `
     <div class="plant-card">
       <div class="info-box">
-        <h2>${name}</h2>
+        <h2 style="cursor:pointer;" onclick="toggleBloomTime()">${name}</h2>
 
         <p><strong>Familie:</strong> ${plant.familie}</p>
         <p><strong>Fundort:</strong> ${plant.fundort}</p>
-        <p><strong>Blütezeit:</strong> ${plant.bluetezeit}</p>
+
+        <p id="bloomTime" style="display:none;">
+          <strong>Blütezeit:</strong> ${plant.bluetezeit}
+        </p>
       </div>
 
-      <img src="${plant.bild}" alt="${name}">
+      <img src="${plant.bild}" alt="${name}" style="cursor:pointer;" onclick="toggleBloomTime()">
 
       <div class="button-row">
         <button onclick="resetApp()">Neue Bestimmung starten</button>
@@ -595,7 +602,6 @@ function showPlantCard(name) {
     </div>
   `;
 }
-
 showMainQuestion();
 </script>
 
