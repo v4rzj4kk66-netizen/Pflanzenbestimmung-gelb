@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pflanzenbestimmung – Gelbe Blüten</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #eef8d5, #fff7cc);
+      color: #2d3a1f;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #7aa31a;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1rem;
+    }
+
+    .container {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .main {
+      flex: 3;
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    }
+
+    .path {
+      flex: 1;
+      background: #f5f9ea;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      border-left: 6px solid #c8d947;
+      min-width: 260px;
+    }
+
+    .path h2 {
+      margin-bottom: 15px;
+      color: #6a8a12;
+    }
+
+    .path ul {
+      list-style: none;
+      padding-left: 10px;
+    }
+
+    .path li {
+      margin-bottom: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+      border-left: 4px solid #e0b400;
+    }
+
+    .question {
+      margin-bottom: 25px;
+    }
+
+    .question h2 {
+      margin-bottom: 20px;
+      color: #56740f;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: 0.25s;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: #d4b100;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      background: white;
+    }
+
+    .card-content {
+      padding: 15px;
+    }
+
+    .card-content h3 {
+      color: #4f650f;
+      margin-bottom: 10px;
+    }
+
+    .card-content p {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .plant-card {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .plant-card img {
+      width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: white;
+    }
+
+    .info-box {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      border-left: 6px solid #d1b100;
+    }
+
+    .info-box h2 {
+      margin-bottom: 15px;
+      color: #57740d;
+    }
+
+    .info-box p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .button-row {
+      margin-top: 25px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #7aa31a;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #617f11;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #eef4d8;
+      color: #56662d;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Bestimmung gelb blühender Pflanzen</h1>
+  <p>Biologie – Interaktiver Bestimmungsschlüssel für Schülerinnen und Schüler</p>
+</header>
+
+<div class="container">
+  <main class="main">
+    <div id="app"></div>
+  </main>
+
+  <aside class="path">
+    <h2>Bestimmungsweg</h2>
+    <ul id="pathList"></ul>
+  </aside>
+</div>
+
+<footer>
+  Bilder werden aus dem lokalen Ordner <strong>bilder</strong> geladen.
+</footer>
+
+<script>
+const plants = {
+  "Ackersenf": {
+    familie: "Kreuzblütengewächse",
+    fundort: "Äcker, Wegränder, Wiesen",
+    bluetezeit: "Mai – September",
+    bild: "bilder/ackersenf.jpg"
+  },
+  "Echtes Barbarakraut": {
+    familie: "Kreuzblütengewächse",
+    fundort: "Feuchte Wiesen, Wegränder",
+    bluetezeit: "April – Juli",
+    bild: "bilder/barbarakraut.jpg"
+  },
+  "Aufrechter Sauerklee": {
+    familie: "Sauerkleegewächse",
+    fundort: "Gärten, Wege, Wiesen",
+    bluetezeit: "Mai – Oktober",
+    bild: "bilder/sauerklee.jpg"
+  },
+  "Gelbes Windröschen": {
+    familie: "Hahnenfußgewächse",
+    fundort: "Laubwälder",
+    bluetezeit: "März – Mai",
+    bild: "bilder/windroeschen.jpg"
+  },
+  "Echte Nelkenwurz": {
+    familie: "Rosengewächse",
+    fundort: "Wälder, Gebüsche",
+    bluetezeit: "Mai – August",
+    bild: "bilder/nelkenwurz.jpg"
+  },
+  "Goldfelberich": {
+    familie: "Primelgewächse",
+    fundort: "Feuchte Standorte",
+    bluetezeit: "Juni – August",
+    bild: "bilder/goldfelberich.jpg"
+  },
+  "Mauerlattich": {
+    familie: "Korbblütengewächse",
+    fundort: "Mauern, Waldränder",
+    bluetezeit: "Juni – September",
+    bild: "bilder/mauerlattich.jpg"
+  },
+  "Knolliger Hahnenfuß": {
+    familie: "Hahnenfußgewächse",
+    fundort: "Wiesen",
+    bluetezeit: "April – Juni",
+    bild: "bilder/knolliger_hahnenfuss.jpg"
+  },
+  "Scharfer Hahnenfuß": {
+    familie: "Hahnenfußgewächse",
+    fundort: "Feuchte Wiesen",
+    bluetezeit: "Mai – September",
+    bild: "bilder/scharfer_hahnenfuss.jpg"
+  },
+  "Scharbockskraut": {
+    familie: "Hahnenfußgewächse",
+    fundort: "Feuchte Wälder",
+    bluetezeit: "März – Mai",
+    bild: "bilder/scharbockskraut.jpg"
+  },
+  "Saat-Wucherblume": {
+    familie: "Korbblütengewächse",
+    fundort: "Äcker, Wiesen",
+    bluetezeit: "Mai – September",
+    bild: "bilder/wucherblume.jpg"
+  },
+  "Jakobskraut": {
+    familie: "Korbblütengewächse",
+    fundort: "Wiesen, Wegränder",
+    bluetezeit: "Juni – Oktober",
+    bild: "bilder/jakobskraut.jpg"
+  },
+  "Huflattich": {
+    familie: "Korbblütengewächse",
+    fundort: "Böschungen, Wege",
+    bluetezeit: "Februar – April",
+    bild: "bilder/huflattich.jpg"
+  },
+  "Löwenzahn": {
+    familie: "Korbblütengewächse",
+    fundort: "Wiesen, Gärten",
+    bluetezeit: "April – Juni",
+    bild: "bilder/loewenzahn.jpg"
+  },
+  "Gewöhnlicher Rainkohl": {
+    familie: "Korbblütengewächse",
+    fundort: "Wiesen",
+    bluetezeit: "Juni – Oktober",
+    bild: "bilder/rainkohl.jpg"
+  },
+  "Waldhabichtskraut": {
+    familie: "Korbblütengewächse",
+    fundort: "Wälder",
+    bluetezeit: "Juni – September",
+    bild: "bilder/waldhabichtskraut.jpg"
+  },
+  "Wiesen-Pippau": {
+    familie: "Korbblütengewächse",
+    fundort: "Wiesen",
+    bluetezeit: "Mai – September",
+    bild: "bilder/pippau.jpg"
+  },
+  "Gewöhnliches Ferkelkraut": {
+    familie: "Korbblütengewächse",
+    fundort: "Trockene Wiesen",
+    bluetezeit: "Mai – Oktober",
+    bild: "bilder/ferkelkraut.jpg"
+  },
+  "Echtes Leinkraut": {
+    familie: "Wegerichgewächse",
+    fundort: "Wegränder, trockene Wiesen",
+    bluetezeit: "Juni – Oktober",
+    bild: "bilder/leinkraut.jpg"
+  },
+  "Goldnessel": {
+    familie: "Lippenblütler",
+    fundort: "Wälder",
+    bluetezeit: "April – Juli",
+    bild: "bilder/goldnessel.jpg"
+  },
+  "Gewöhnlicher Hornklee": {
+    familie: "Hülsenfrüchtler",
+    fundort: "Wiesen",
+    bluetezeit: "Mai – September",
+    bild: "bilder/hornklee.jpg"
+  },
+  "Kleiner Klappertopf": {
+    familie: "Sommerwurzgewächse",
+    fundort: "Wiesen",
+    bluetezeit: "Mai – August",
+    bild: "bilder/klappertopf.jpg"
+  },
+  "Gelbe Gauklerblume": {
+    familie: "Gauklerblumengewächse",
+    fundort: "Feuchte Böden",
+    bluetezeit: "Juni – September",
+    bild: "bilder/gauklerblume.jpg"
+  },
+  "Hopfenklee": {
+    familie: "Hülsenfrüchtler",
+    fundort: "Wiesen",
+    bluetezeit: "Mai – September",
+    bild: "bilder/hopfenklee.jpg"
+  },
+  "Echtes Johanniskraut": {
+    familie: "Johanniskrautgewächse",
+    fundort: "Wiesen, Wegränder",
+    bluetezeit: "Juni – August",
+    bild: "bilder/johanniskraut.jpg"
+  },
+  "Zypressen-Wolfsmilch": {
+    familie: "Wolfsmilchgewächse",
+    fundort: "Trockene Wiesen",
+    bluetezeit: "April – September",
+    bild: "bilder/wolfsmilch.jpg"
+  },
+  "Rainfarn": {
+    familie: "Korbblütengewächse",
+    fundort: "Wegränder",
+    bluetezeit: "Juli – Oktober",
+    bild: "bilder/rainfarn.jpg"
+  }
+};
+
+const path = [];
+
+function updatePath() {
+  const pathList = document.getElementById('pathList');
+  pathList.innerHTML = '';
+
+  path.forEach(step => {
+    const li = document.createElement('li');
+    li.textContent = step;
+    pathList.appendChild(li);
+  });
+}
+
+function addPath(step) {
+  path.push(step);
+  updatePath();
+}
+
+const historyStack = [];
+
+function saveCurrentState() {
+  historyStack.push(document.getElementById('app').innerHTML);
+}
+
+function goBack() {
+  if (historyStack.length > 0) {
+    document.getElementById('app').innerHTML = historyStack.pop();
+  }
+}
+
+function resetApp() {
+  path.length = 0;
+  updatePath();
+  showMainQuestion();
+}
+
+function createOption(title, img, text, action) {
+  return `
+    <div class="card" onclick="${action}">
+      <img src="${img}" alt="${title}">
+      <div class="card-content">
+        <h3>${title}</h3>
+        <p>${text}</p>
+      </div>
+    </div>
+  `;
+}
+
+function showMainQuestion() {
+  saveCurrentState();
+  document.getElementById('app').innerHTML = `
+    <div class="question">
+      <h2>1. Welche Blütenform besitzt die Pflanze?</h2>
+      <div class="options">
+        ${createOption(
+          'Einzelblüte',
+          'bilder/einzelbluete.jpg',
+          'Eine einzelne auffällige Blüte mit sichtbaren Kronblättern.',
+          "selectSingleFlower()"
+        )}
+
+        ${createOption(
+          'Lippenblüte',
+          'bilder/lippenbluete.jpg',
+          'Blüte mit oberer und unterer Lippe.',
+          "selectLipFlower()"
+        )}
+
+        ${createOption(
+          'Zusammengesetzte Blüte',
+          'bilder/zusammengesetzt.jpg',
+          'Viele kleine Einzelblüten bilden zusammen einen Blütenstand.',
+          "selectCompositeFlower()"
+        )}
+      </div>
+    </div>
+  `;
+}
+
+function selectSingleFlower() {
+  saveCurrentState();
+  addPath('Blütenform: Einzelblüte');
+
+  document.getElementById('app').innerHTML = `
+    <div class="question">
+      <h2>2. Wie viele Kronblätter besitzt die Blüte?</h2>
+      <div class="options">
+
+        ${createOption(
+          'Vier symmetrische Kronblätter',
+          'bilder/vier_kronblaetter.jpg',
+          'Kreuzförmig angeordnete vier Blütenblätter.',
+          "showPlantSelection(['Ackersenf','Echtes Barbarakraut'])"
+        )}
+
+        ${createOption(
+          'Fünf oder sechs Kronblätter',
+          'bilder/fuenf_sechs.jpg',
+          'Fünf oder sechs deutlich sichtbare Kronblätter.',
+          "showPlantSelection(['Aufrechter Sauerklee','Gelbes Windröschen','Echte Nelkenwurz','Goldfelberich','Mauerlattich','Knolliger Hahnenfuß','Scharfer Hahnenfuß'])"
+        )}
+
+        ${createOption(
+          'Acht Kronblätter',
+          'bilder/acht.jpg',
+          'Acht gleichmäßig angeordnete Kronblätter.',
+          "showPlantSelection(['Scharbockskraut'])"
+        )}
+
+        ${createOption(
+          'Viele Kronblätter',
+          'bilder/viele.jpg',
+          'Sehr viele kleine Blütenblätter oder Zungenblüten.',
+          "showPlantSelection(['Saat-Wucherblume','Jakobskraut','Huflattich','Löwenzahn','Gewöhnlicher Rainkohl','Waldhabichtskraut','Wiesen-Pippau','Gewöhnliches Ferkelkraut'])"
+        )}
+
+      </div>
+    </div>
+  `;
+}
+
+function selectLipFlower() {
+  saveCurrentState();
+  addPath('Blütenform: Lippenblüte');
+
+  showPlantSelection([
+    'Echtes Leinkraut',
+    'Goldnessel',
+    'Gewöhnlicher Hornklee',
+    'Kleiner Klappertopf',
+    'Gelbe Gauklerblume'
+  ]);
+}
+
+function selectCompositeFlower() {
+  saveCurrentState();
+  addPath('Blütenform: Zusammengesetzte Blüte');
+
+  document.getElementById('app').innerHTML = `
+    <div class="question">
+      <h2>2. Welcher Blütenstand liegt vor?</h2>
+
+      <div class="options">
+        ${createOption(
+          'Blüten mit Köpfchen',
+          'bilder/koepfchen.jpg',
+          'Kleine Blüten sitzen dicht zusammen in einem Köpfchen.',
+          "showPlantSelection(['Hopfenklee'])"
+        )}
+
+        ${createOption(
+          'Dolden / Trugdolden / Doldenrispen',
+          'bilder/dolden.jpg',
+          'Mehrere Blüten entspringen von einem Punkt oder verzweigen sich.',
+          "showPlantSelection(['Echtes Johanniskraut','Zypressen-Wolfsmilch','Rainfarn'])"
+        )}
+      </div>
+    </div>
+  `;
+}
+
+function showPlantSelection(plantNames) {
+  saveCurrentState();
+  addPath('Pflanzenauswahl');
+
+  let html = `
+    <div class="question">
+      <h2>3. Wähle die passende Pflanze aus</h2>
+      <div class="options">
+  `;
+
+  plantNames.forEach(name => {
+    html += createOption(
+      name,
+      plants[name].bild,
+      `showPlantCard('${name}')`
+    );
+  });
+
+  html += `</div></div>`;
+
+  document.getElementById('app').innerHTML = html;
+}
+
+function showPlantCard(name) {
+  saveCurrentState();
+  addPath('Bestimmte Pflanze: ' + name);
+
+  const plant = plants[name];
+
+  document.getElementById('app').innerHTML = `
+    <div class="plant-card">
+      <div class="info-box">
+        <h2>${name}</h2>
+
+        <p><strong>Familie:</strong> ${plant.familie}</p>
+        <p><strong>Fundort:</strong> ${plant.fundort}</p>
+        <p><strong>Blütezeit:</strong> ${plant.bluetezeit}</p>
+      </div>
+
+      <img src="${plant.bild}" alt="${name}">
+
+      <div class="button-row">
+        <button onclick="resetApp()">Neue Bestimmung starten</button>
+        <button onclick="goBack()">Zurück</button>
+      </div>
+    </div>
+  `;
+}
+
+showMainQuestion();
+</script>
+
+</body>
+</html>
