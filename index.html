@@ -554,10 +554,7 @@ function showPlantSelection(plantNames) {
 
   let html = `
     <div class="question">
-<h2>3. Wähle die passende Pflanze aus</h2>
-<p style="margin-bottom:15px; font-size:0.95rem; color:#5a6b3a;">
-Klicke auf Bild oder Namen für weitere Informationen.
-</p>
+      <h2>3. Wähle die passende Pflanze aus</h2>
       <div class="options">
   `;
 
@@ -565,7 +562,8 @@ Klicke auf Bild oder Namen für weitere Informationen.
     html += createOption(
       name,
       plants[name].bild,
-     '',`showPlantCard('${name}')`
+      `Blütezeit: ${plants[name].bluetezeit}`,
+      `showPlantCard('${name}')`
     );
   });
 
